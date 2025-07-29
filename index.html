@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartHands Diest</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>SmartHands Diest</h1>
+      <p>Клінінг та майстер на годину у Дісті</p>
+    </div>
+  </header>
+
+  <section class="about">
+    <div class="container">
+      <h2>Про нас</h2>
+      <p>Ми — українська родина, яка після повномасштабного вторгнення рф переїхала до Бельгії. Ми прагнемо допомагати людям, пропонуючи надійні та якісні послуги клінінгу та "майстра на годину".</p>
+      <img src="static/images/cleaning.jpg" alt="Наша команда"> <!--має бути фото сім'ї-->
+    </div>
+  </section>
+
+  <section class="services">
+    <div class="container">
+      <h2>Наші послуги</h2>
+      <div class="service-list">
+        <div class="service">
+            <h3>Клінінг</h3>
+            <p>Професійне прибирання квартир, будинків, офісів. Швидко, якісно, надійно.</p>
+          <img src="static/images/cleaning1.jpg" alt="Клінінг">
+        </div>
+        <div class="service">
+            <h3>Майстер на годину</h3>
+            <p>Дрібний ремонт, збирання меблів, встановлення техніки. Ваші проблеми — наша справа!</p>
+          <img src="static/images/image.webp" alt="Майстер на годину">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <h2>Є проблема, але немає часу її вирішити?</h2>
+      <p>Майстер на годину вже поспішає!</p>
+      <a href="#form" class="btn">Замовити послугу</a>
+    </div>
+  </section>
+
+  <section class="form-section" id="form">
+    <div class="container">
+      <h2>Залишити заявку</h2>
+      <form id="request-form">
+        <label for="name">Ім'я</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="phone">Телефон</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="message">Повідомлення</label>
+        <textarea id="message" name="message" required></textarea>
+
+        <button type="submit">Надіслати</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 SmartHands Diest. Усі права захищені.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Telegram бот інтеграція
+    document.getElementById("request-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const message = document.getElementById("message").value;
+
+      const token = "YOUR_TELEGRAM_BOT_TOKEN";
+      const chat_id = "YOUR_CHAT_ID";
+      const text = `Нова заявка:%0AІм'я: ${name}%0AТелефон: ${phone}%0AПовідомлення: ${message}`;
+
+      fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${text}`)
+        .then(response => {
+          if (response.ok) {
+            alert("Заявка надіслана! Ми зв'яжемося з вами.");
+            document.getElementById("request-form").reset();
+          } else {
+            alert("Помилка надсилання заявки. Спробуйте ще раз.");
+          }
+        });
+    });
+  </script>
+</body>
+</html>

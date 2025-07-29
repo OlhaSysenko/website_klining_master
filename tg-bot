@@ -1,0 +1,38 @@
+
+document.getElementById('tgForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const token = 'ВАШ_BOT_TOKEN';
+  const chat_id = 'ВАШ_CHAT_ID';
+
+  const name = document.getElementById('name').value;
+  const phone = document.getElementById('phone').value;
+  const service = document.getElementById('service').value;
+
+  const message = `🛠 Нова заявка:
+Ім’я: ${name}
+Телефон: ${phone}
+Послуга: ${service}`;
+
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      chat_id: chat_id,
+      text: message
+    })
+  })
+    .then(response => {
+      if (response.ok) {
+        alert('Заявку надіслано! Ми з вами зв’яжемось.');
+        document.getElementById('tgForm').reset();
+      } else {
+        alert('Помилка при надсиланні. Спробуйте ще раз.');
+      }
+    })
+    .catch(error => {
+      alert('Помилка з’єднання: ' + error.message);
+    });
+});
