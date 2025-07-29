@@ -1,77 +1,91 @@
 <!DOCTYPE html>
 <html lang="uk">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>SmartHands Diest — Клінінг та Майстер на годину</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>SmartHands Diest</h1>
-      <p class="slogan">Є проблема, але не маєш часу її вирішити? — майстер на годину вже поспішає</p>
-      <p class="slogan">Ненавидиш прибирання? — тоді тобі до нас</p>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartHands Diest — Клінінг та Майстер на годину</title>
+  <link rel="stylesheet" href="static/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>SmartHands Diest</h1>
+    <p class="slogan">Є проблема, але не маєш часу її вирішити? — майстер на годину вже поспішає</p>
+    <p class="slogan">Ненавидиш прибирання? — тоді тобі до нас</p>
+  </header>
 
-    <section class="services">
-      <h2>Наші послуги</h2>
-      <ul>
-        <li>Клінінг квартир, будинків, офісів</li>
-        <li>Майстер на годину: дрібний ремонт, збір меблів, електрика</li>
-        <li>Допомога вдома: повісити карниз, закріпити поличку тощо</li>
-      </ul>
-    </section>
+  <section class="services">
+    <h2>Наші послуги</h2>
+    <ul>
+      <li>Клінінг квартир, будинків, офісів</li>
+      <li>Майстер на годину: дрібний ремонт, збір меблів, електрика</li>
+      <li>Допомога вдома: повісити карниз, закріпити поличку тощо</li>
+    </ul>
+  </section>
 
-    <section class="form-section">
-      <h2>Залишити заявку</h2>
-      <form action="https://api.telegram.org/bot<ТВОЙ_ТОКЕН>/sendMessage" method="POST" onsubmit="return sendTelegram(event)">
-        <label for="name">Ім’я:</label>
-        <input type="text" id="name" name="name" required />
+  <section class="form-section">
+    <h2>Залишити заявку</h2>
+    <form id="tgForm" onsubmit="return sendTelegram(event)">
+      <label for="name">Ім’я:</label>
+      <input type="text" id="name" name="name" required />
 
-        <label for="phone">Телефон:</label>
-        <input type="tel" id="phone" name="phone" required />
+      <label for="phone">Телефон:</label>
+      <input type="tel" id="phone" name="phone" required />
 
-        <label for="service">Послуга:</label>
-        <select id="service" name="service" required>
-          <option value="">Оберіть послугу</option>
-          <option value="Клінінг">Клінінг</option>
-          <option value="Майстер на годину">Майстер на годину</option>
-        </select>
+      <label for="service">Послуга:</label>
+      <select id="service" name="service" required>
+        <option value="">Оберіть послугу</option>
+        <option value="Клінінг">Клінінг</option>
+        <option value="Майстер на годину">Майстер на годину</option>
+      </select>
 
-        <button type="submit">Надіслати</button>
-      </form>
-    </section>
+      <button type="submit">Надіслати</button>
+    </form>
+  </section>
 
-    <footer>
-      <p>Контактний номер: <a href="tel:+380662770894">+380662770894</a></p>
-      <p>&copy; 2025 SmartHands Diest</p>
-    </footer>
+  <footer>
+    <p>Контактний номер: <a href="tel:+380662770894">+380662770894</a></p>
+    <p>&copy; 2025 SmartHands Diest</p>
+  </footer>
 
-    <script>
-      async function sendTelegram(event) {
-        event.preventDefault();
-        const token = '<ТВОЙ_ТОКЕН>';
-        const chatId = '<ТВІЙ_CHAT_ID>';
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const service = document.getElementById("service").value;
+  <script>
+    async function sendTelegram(event) {
+      event.preventDefault();
 
-        const message = `Нова заявка:\nІм’я: ${name}\nТелефон: ${phone}\nПослуга: ${service}`;
+      const token = 'ВАШ_ТОКЕН';
+      const chatId = 'ВАШ_CHAT_ID';
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const service = document.getElementById("service").value;
 
-        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      if (!name || !phone || !service) {
+        alert("Будь ласка, заповніть усі поля.");
+        return;
+      }
+
+      const message = `🛠 Нова заявка:\n👤 Ім’я: ${name}\n📞 Телефон: ${phone}\n🧾 Послуга: ${service}`;
+
+      try {
+        const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({
             chat_id: chatId,
-            text: message,
-          }),
+            text: message
+          })
         });
 
-        alert("Заявку надіслано!");
-        event.target.reset();
+        if (response.ok) {
+          alert("Заявку надіслано!");
+          event.target.reset();
+        } else {
+          alert("Помилка при надсиланні. Перевірте токен і чат ID.");
+        }
+      } catch (error) {
+        alert("Сталася помилка. Спробуйте пізніше.");
       }
-    </script>
-  </body>
+    }
+  </script>
+</body>
 </html>
