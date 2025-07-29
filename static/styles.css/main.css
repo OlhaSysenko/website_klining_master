@@ -1,56 +1,73 @@
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f4fdfc;
-    color: #222;
-    margin: 0;
-    padding: 0;
-  }
-  
-  header {
-    background-color: #4fbfbf;
-    color: white;
-    padding: 2rem;
-    text-align: center;
-    border-radius: 0 0 20px 20px;
-  }
-  
-  .services, .about, .contact {
-    padding: 2rem;
-  }
-  
-  h2 {
-    color: #2b7a78;
-  }
-  
-  form {
-    display: grid;
-    gap: 1rem;
-    max-width: 400px;
-    margin: auto;
-  }
-  
-  input, select, button {
-    padding: 0.8rem;
-    font-size: 1rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-  }
-  
-  button {
-    background-color: #3aafa9;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #2b7a78;
-  }
-  
-  footer {
-    text-align: center;
-    padding: 1rem;
-    background-color: #def2f1;
-    border-top: 1px solid #ccc;
-  }
-  
+  font-family: "Segoe UI", sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f9f6;
+  color: #333;
+}
+
+header {
+  background-color: #7fd1ae;
+  color: #fff;
+  padding: 2rem;
+  text-align: center;
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.slogan {
+  margin: 0.2rem 0;
+  font-style: italic;
+}
+
+.services, .form-section {
+  padding: 2rem;
+}
+
+.services h2, .form-section h2 {
+  color: #444;
+}
+
+ul {
+  list-style: disc inside;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+label {
+  margin-top: 1rem;
+}
+
+input, select, button {
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background-color: #7fd1ae;
+  color: #fff;
+  border: none;
+  margin-top: 1.5rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #5dbd94;
+}
+
+footer {
+  background-color: #e0f3ec;
+  padding: 1rem;
+  text-align: center;
+}
