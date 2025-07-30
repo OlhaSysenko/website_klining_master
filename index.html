@@ -1,144 +1,407 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SmartHands Diest</title>
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    /* Прості стилі для базової візуалізації */
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; }
-    .container { max-width: 900px; margin: auto; padding: 20px; background: #fff; }
-    header, footer { background: #004d99; color: #fff; padding: 20px 0; text-align: center; }
-    h1, h2, h3 { margin-bottom: 15px; }
-    p { line-height: 1.6; }
-    .service-list { display: flex; gap: 20px; flex-wrap: wrap; }
-    .service { flex: 1 1 45%; background: #e6f0ff; padding: 15px; border-radius: 8px; }
-    .service img { max-width: 100%; border-radius: 6px; margin-top: 10px; }
-    ul { list-style: none; padding-left: 0; }
-    ul li { margin-bottom: 10px; font-size: 1.1em; }
-    .form-section { background: #f0f4ff; padding: 30px 20px; margin-top: 30px; border-radius: 8px; }
-    form { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: auto; }
-    input, select, textarea, button {
-      padding: 10px; font-size: 1em; border-radius: 5px; border: 1px solid #ccc;
-    }
-    button {
-      background: #004d99; color: #fff; border: none; cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover { background: #003366; }
-    #success { color: green; text-align: center; margin-top: 10px; display: none; }
-    .cta { background: #0073e6; color: white; padding: 30px 20px; text-align: center; margin-top: 30px; border-radius: 8px; }
-    .cta a.btn {
-      background: #004d99; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;
-      font-weight: bold;
-    }
-    .cta a.btn:hover { background: #003366; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title data-i18n="title">SmartHands Diest</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; }
+  .container { max-width: 900px; margin: auto; padding: 20px; background: #fff; }
+  header, footer { background: #004d99; color: #0a931a; padding: 20px 0; text-align: center; }
+  h1, h2, h3 { margin-bottom: 15px; }
+  p { line-height: 1.6; }
+  .service-list { display: flex; gap: 20px; flex-wrap: wrap; }
+  .service { flex: 1 1 45%; background: #e6f0ff; padding: 15px; border-radius: 8px; }
+  .service img { max-width: 100%; border-radius: 6px; margin-top: 10px; }
+  ul { list-style: none; padding-left: 0; }
+  ul li { margin-bottom: 10px; font-size: 1.1em; }
+  .form-section { background: #f0f4ff; padding: 30px 20px; margin-top: 30px; border-radius: 8px; }
+  form { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: auto; }
+  input, select, textarea, button {
+    padding: 10px; font-size: 1em; border-radius: 5px; border: 1px solid #ccc;
+  }
+  button {
+    background: #004d99; color: #fff; border: none; cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover { background: #003366; }
+  #success { color: green; text-align: center; margin-top: 10px; display: none; }
+  .cta { background: #0073e6; color: white; padding: 30px 20px; text-align: center; margin-top: 30px; border-radius: 8px; }
+  .cta a.btn {
+    background: #004d99; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;
+    font-weight: bold;
+  }
+  .cta a.btn:hover { background: #003366; }
+  .lang-switch a {
+    color: white;
+    cursor: pointer;
+    margin: 0 5px;
+    text-decoration: underline;
+  }
+
+  /* СТИЛІ ДЛЯ ЧАТУ */
+  #chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #004d99;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 30px;
+    z-index: 9999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+  #chat-window {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #chat-header {
+    background:#004d99;
+    color:white;
+    padding:10px;
+    font-weight:bold;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #chat-close {
+    background:none;
+    border:none;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+  }
+  #chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 14px;
+  }
+  #chat-form {
+    display: flex;
+    border-top: 1px solid #ddd;
+  }
+  #chat-input {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    font-size: 14px;
+  }
+  #chat-form button {
+    background: #004d99;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+  }
+  #chat-form button:hover {
+    background: #003366;
+  }
+  .chat-message-user {
+    text-align: right;
+    margin-bottom: 8px;
+    color: #004d99;
+  }
+  .chat-message-operator {
+    text-align: left;
+    margin-bottom: 8px;
+    color: #0073e6;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <h1>SmartHands Diest</h1>
-      <p>Клінінг та майстер на годину у Дісті</p>
-    </div>
-  </header>
 
-  <section class="about container">
-    <h2>Про нас</h2>
-    <p>Ми — українська родина, яка після повномасштабного вторгнення рф переїхала до Бельгії. Ми прагнемо допомагати людям, пропонуючи надійні та якісні послуги клінінгу та "майстра на годину".</p>
-    <img src="static/images/cleaning.jpg" alt="Наша команда" style="max-width:100%; border-radius:8px; margin-top:15px;">
-  </section>
-
-  <section class="services container">
-    <h2>Наші послуги</h2>
-    <div class="service-list">
-      <div class="service">
-        <h3>🧹 Клінінг</h3>
-        <p>Професійне прибирання квартир, будинків, офісів. Швидко, якісно, надійно.</p>
-        <img src="static/images/cleaning1.jpg" alt="Клінінг" />
-      </div>
-      <div class="service">
-        <h3>🔧 Майстер на годину</h3>
-        <p>Дрібний ремонт, збирання меблів, встановлення техніки. Ваші проблеми — наша справа!</p>
-        <img src="static/images/image.webp" alt="Майстер на годину" />
+<header class="fixed-header">
+  <div class="top-bar">
+    <div class="contact-icons">
+      <a href="https://t.me/leli4ka_ka4" target="_blank" title="Telegram">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" width="28" height="28" />
+      </a>
+      <a href="https://wa.me/380662770894" target="_blank" title="WhatsApp">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="28" height="28" />
+      </a>
+      
+      <span class="phone-number">+380662770894</span>
+      <div class="lang-switch">
+        <a href="#" onclick="setLanguage('uk'); return false;">UKR</a> |
+        <a href="#" onclick="setLanguage('en'); return false;">EN</a> |
+        <a href="#" onclick="setLanguage('nl'); return false;">NL</a>
       </div>
     </div>
-    <ul style="margin-top: 20px;">
-      <li>🧹 Прибирання квартир, будинків, офісів</li>
-      <li>🔧 Збірка меблів, ремонт сантехніки, електрики</li>
-      <li>🪟 Миття вікон, генеральне прибирання</li>
-    </ul>
-  </section>
+  </div>
 
-  <section class="cta container">
-    <h2>Є проблема, але немає часу її вирішити?</h2>
-    <p>Майстер на годину вже поспішає!</p>
-    <a href="#form" class="btn">Замовити послугу</a>
-  </section>
+  <div class="container header-title">
+    <h1 data-i18n="header_title">SmartHands Diest</h1>
+    <p data-i18n="header_slogan">Клінінг та майстер на годину у Дісті</p>
+  </div>
+</header>
 
-  <section class="form-section container" id="form">
-    <h2>Залишити заявку</h2>
-    <form id="tgForm">
-      <input type="text" name="name" placeholder="Ваше ім’я" required />
-      <input type="tel" name="phone" placeholder="Телефон" required />
-      <select name="service" required>
-        <option value="">Оберіть послугу</option>
-        <option value="Клінінг">Клінінг</option>
-        <option value="Майстер на годину">Майстер на годину</option>
-      </select>
-      <textarea name="message" placeholder="Повідомлення" rows="4"></textarea>
-      <button type="submit">Надіслати</button>
-    </form>
-    <p id="success">Заявку надіслано!</p>
-  </section>
+<section class="about container">
+  <h2 data-i18n="about_title">Про нас</h2>
+  <p data-i18n="about_text">
+    Ми — українська родина, яка після повномасштабного вторгнення рф переїхала до Бельгії. Ми прагнемо допомагати людям, пропонуючи надійні та якісні послуги клінінгу та "майстра на годину".
+  </p>
+  <img src="static/images/cleaning.jpg" alt="Наша команда" style="display: block; margin: 15px auto 0; width: 100%; border-radius: 8px;">
+</section>
 
-  <footer>
-    <div class="container" style="text-align:center; padding:20px 0; background:#004d99; color:#fff; margin-top: 40px;">
-      <p>📞 +32 456 78 90 12 | &copy; 2025 SmartHands Diest. Усі права захищені.</p>
+<section class="services container">
+  <h2 data-i18n="services_title">Наші послуги</h2>
+  <div class="service-list">
+    <div class="service">
+      <h3 data-i18n="service_cleaning_title">🧹 Клінінг</h3>
+      <p data-i18n="service_cleaning_text">Професійне прибирання квартир, будинків, офісів. Швидко, якісно, надійно.</p>
+      <img src="static/images/cleaning1.jpg" alt="Клінінг" />
     </div>
-  </footer>
+    <div class="service">
+      <h3 data-i18n="service_handyman_title">🔧 Майстер на годину</h3>
+      <p data-i18n="service_handyman_text">Дрібний ремонт, збирання меблів, встановлення техніки. Ваші проблеми — наша справа!</p>
+      <img src="static/images/image.webp" alt="Майстер на годину" />
+    </div>
+  </div>
+  <ul style="margin-top: 20px;">
+    <li data-i18n="service_list_1">🧹 Прибирання квартир, будинків, офісів</li>
+    <li data-i18n="service_list_2">🔧 Збірка меблів, ремонт сантехніки, електрики</li>
+    <li data-i18n="service_list_3">🪟 Миття вікон, генеральне прибирання</li>
+  </ul>
+</section>
 
-  <script>
-    const form = document.getElementById('tgForm');
-    const successMsg = document.getElementById('success');
-    successMsg.style.display = 'none';
+<section class="cta container">
+  <h2 data-i18n="cta_title">Є проблема, але немає часу її вирішити?</h2>
+  <p data-i18n="cta_text">Майстер на годину вже поспішає!</p>
+  <a href="#form" class="btn" data-i18n="cta_button">Замовити послугу</a>
+</section>
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+<section class="form-section container" id="form">
+  <h2 data-i18n="form_title">Залишити заявку</h2>
+  <form id="tgForm">
+    <input type="text" name="name" placeholder="Ваше ім’я" required data-i18n-placeholder="form_name_placeholder"/>
+    <input type="tel" name="phone" placeholder="Телефон" required data-i18n-placeholder="form_phone_placeholder"/>
+    <select name="service" required>
+      <option value="" data-i18n-option="form_service_placeholder">Оберіть послугу</option>
+      <option value="Клінінг" data-i18n-option="service_cleaning_title_option">Клінінг</option>
+      <option value="Майстер на годину" data-i18n-option="service_handyman_title_option">Майстер на годину</option>
+    </select>
+    <textarea name="message" placeholder="Повідомлення" rows="4" data-i18n-placeholder="form_message_placeholder"></textarea>
+    <button type="submit" data-i18n="form_submit">Надіслати</button>
+  </form>
+  <p id="success" data-i18n="form_success">Заявку надіслано!</p>
+</section>
 
-      const token = 'ВАШ_ТЕЛЕГРАМ_БОТ_ТОКЕН';
-      const chatId = 'ВАШ_CHAT_ID';
-      const name = form.name.value.trim();
-      const phone = form.phone.value.trim();
-      const service = form.service.value;
-      const messageText = form.message.value.trim();
+<footer>
+  <div class="container" style="text-align:center; padding:20px 0; background:#004d99; color:#fff; margin-top: 40px;">
+    <p data-i18n="footer_text">📞 +32 456 78 90 12 | &copy; 2025 SmartHands Diest. Усі права захищені.</p>
+  </div>
+</footer>
 
-      if (!name || !phone || !service) {
-        alert('Будь ласка, заповніть всі обов’язкові поля!');
-        return;
-      }
+<!-- Онлайн-чат -->
+<div id="chat-button" title="Онлайн чат">💬</div>
+<div id="chat-window" role="dialog" aria-modal="true" aria-labelledby="chat-header">
+  <div id="chat-header">
+    Онлайн чат
+    <button id="chat-close" aria-label="Закрити чат">×</button>
+  </div>
+  <div id="chat-messages">
+    <div><em>Оператор зараз офлайн</em></div>
+  </div>
+  <form id="chat-form">
+    <input type="text" id="chat-input" placeholder="Напишіть повідомлення..." autocomplete="off" />
+    <button type="submit">▶</button>
+  </form>
+</div>
 
-      const message = `🛠 Нова заявка!\n👤 Ім’я: ${name}\n📞 Телефон: ${phone}\n🧾 Послуга: ${service}\n📝 Повідомлення: ${messageText}`;
+<script>
+const translations = {
+  uk: {
+    title: "SmartHands Diest",
+    header_title: "SmartHands Diest",
+    header_slogan: "Клінінг та майстер на годину у Дісті",
+    about_title: "Про нас",
+    about_text: "Ми — українська родина, яка після повномасштабного вторгнення рф переїхала до Бельгії. Ми прагнемо допомагати людям, пропонуючи надійні та якісні послуги клінінгу та \"майстра на годину\".",
+    services_title: "Наші послуги",
+    service_cleaning_title: "🧹 Клінінг",
+    service_cleaning_text: "Професійне прибирання квартир, будинків, офісів. Швидко, якісно, надійно.",
+    service_handyman_title: "🔧 Майстер на годину",
+    service_handyman_text: "Дрібний ремонт, збирання меблів, встановлення техніки. Ваші проблеми — наша справа!",
+    service_list_1: "🧹 Прибирання квартир, будинків, офісів",
+    service_list_2: "🔧 Збірка меблів, ремонт сантехніки, електрики",
+    service_list_3: "🪟 Миття вікон, генеральне прибирання",
+    cta_title: "Є проблема, але немає часу її вирішити?",
+    cta_text: "Майстер на годину вже поспішає!",
+    cta_button: "Замовити послугу",
+    form_title: "Залишити заявку",
+    form_name_placeholder: "Ваше ім’я",
+    form_phone_placeholder: "Телефон",
+    form_service_placeholder: "Оберіть послугу",
+    service_cleaning_title_option: "Клінінг",
+    service_handyman_title_option: "Майстер на годину",
+    form_message_placeholder: "Повідомлення",
+    form_submit: "Надіслати",
+    form_success: "Заявку надіслано!",
+    footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. Усі права захищені."
+  },
+  en: {
+    title: "SmartHands Diest",
+    header_title: "SmartHands Diest",
+    header_slogan: "Cleaning and handyman services in Diest",
+    about_title: "About us",
+    about_text: "We are a Ukrainian family who moved to Belgium after the full-scale invasion by Russia. We aim to help people by providing reliable and quality cleaning and handyman services.",
+    services_title: "Our services",
+    service_cleaning_title: "🧹 Cleaning",
+    service_cleaning_text: "Professional cleaning of apartments, houses, offices. Fast, quality, reliable.",
+    service_handyman_title: "🔧 Handyman",
+    service_handyman_text: "Minor repairs, furniture assembly, appliance installation. Your problems are our business!",
+    service_list_1: "🧹 Cleaning apartments, houses, offices",
+    service_list_2: "🔧 Furniture assembly, plumbing and electrical repairs",
+    service_list_3: "🪟 Window washing, general cleaning",
+    cta_title: "Got a problem but no time to fix it?",
+    cta_text: "The handyman is already rushing!",
+    cta_button: "Order a service",
+    form_title: "Leave a request",
+    form_name_placeholder: "Your name",
+    form_phone_placeholder: "Phone",
+    form_service_placeholder: "Select a service",
+    service_cleaning_title_option: "Cleaning",
+    service_handyman_title_option: "Handyman",
+    form_message_placeholder: "Message",
+    form_submit: "Send",
+    form_success: "Request sent!",
+    footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. All rights reserved."
+  },
+  nl: {
+    title: "SmartHands Diest",
+    header_title: "SmartHands Diest",
+    header_slogan: "Schoonmaak- en klusdiensten in Diest",
+    about_title: "Over ons",
+    about_text: "Wij zijn een Oekraïens gezin dat naar België is verhuisd na de grootschalige invasie door Rusland. Wij streven ernaar mensen te helpen door betrouwbare en kwaliteitsvolle schoonmaak- en klusdiensten aan te bieden.",
+    services_title: "Onze diensten",
+    service_cleaning_title: "🧹 Schoonmaken",
+    service_cleaning_text: "Professionele schoonmaak van appartementen, huizen, kantoren. Snel, kwalitatief, betrouwbaar.",
+    service_handyman_title: "🔧 Klusjesman",
+    service_handyman_text: "Kleine reparaties, meubelmontage, installatie van apparaten. Uw problemen zijn onze zaak!",
+    service_list_1: "🧹 Schoonmaken van appartementen, huizen, kantoren",
+    service_list_2: "🔧 Meubelmontage, loodgieter- en elektricienreparaties",
+    service_list_3: "🪟 Ramen wassen, grote schoonmaak",
+    cta_title: "Probleem, maar geen tijd om het op te lossen?",
+    cta_text: "De klusjesman komt al aan!",
+    cta_button: "Bestel een dienst",
+    form_title: "Laat een aanvraag achter",
+    form_name_placeholder: "Uw naam",
+    form_phone_placeholder: "Telefoon",
+    form_service_placeholder: "Selecteer een dienst",
+    service_cleaning_title_option: "Schoonmaken",
+    service_handyman_title_option: "Klusjesman",
+    form_message_placeholder: "Bericht",
+    form_submit: "Verzenden",
+    form_success: "Aanvraag verzonden!",
+    footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. Alle rechten voorbehouden."
+  }
+};
 
-      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text: message })
-      })
-      .then(res => {
-        if (res.ok) {
-          form.reset();
-          successMsg.style.display = 'block';
-          setTimeout(() => { successMsg.style.display = 'none'; }, 5000);
-        } else {
-          alert('Помилка надсилання. Спробуйте ще раз.');
-        }
-      })
-      .catch(() => {
-        alert('Помилка надсилання. Спробуйте ще раз.');
-      });
-    });
-  </script>
+function setLanguage(lang) {
+  if (!translations[lang]) return;
+
+  // Зміна тайтла сторінки
+  document.title = translations[lang].title;
+
+  // Тексти у елементах з data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+
+  // Placeholder для input, textarea, select з data-i18n-placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (translations[lang][key]) {
+      el.placeholder = translations[lang][key];
+    }
+  });
+
+  // Текст для option у select з data-i18n-option
+  document.querySelectorAll('option[data-i18n-option]').forEach(el => {
+    const key = el.getAttribute('data-i18n-option');
+    if (translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+}
+
+// Встановити мову за замовчуванням при завантаженні
+document.addEventListener('DOMContentLoaded', () => {
+  setLanguage('uk');
+
+  // Онлайн-чат логіка
+  const chatButton = document.getElementById('chat-button');
+  const chatWindow = document.getElementById('chat-window');
+  const chatClose = document.getElementById('chat-close');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  const chatMessages = document.getElementById('chat-messages');
+
+  chatButton.onclick = () => {
+    chatWindow.style.display = 'flex';
+    chatButton.style.display = 'none';
+  };
+
+  chatClose.onclick = () => {
+    chatWindow.style.display = 'none';
+    chatButton.style.display = 'flex';
+  };
+
+  chatForm.onsubmit = e => {
+    e.preventDefault();
+    const message = chatInput.value.trim();
+    if (message === '') return;
+
+    // Додаємо повідомлення користувача
+    const userMsg = document.createElement('div');
+    userMsg.classList.add('chat-message-user');
+    userMsg.textContent = `Ви: ${message}`;
+    chatMessages.appendChild(userMsg);
+
+    chatInput.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Відповідь оператора (через секунду)
+    setTimeout(() => {
+      const operatorMsg = document.createElement('div');
+      operatorMsg.classList.add('chat-message-operator');
+      operatorMsg.textContent = 'Оператор: Дякую за ваше повідомлення! Ми зв’яжемося з вами найближчим часом.';
+      chatMessages.appendChild(operatorMsg);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 1000);
+  };
+
+  // --- Tawk.to script ---
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/default';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+  })();
+});
+</script>
+
 </body>
 </html>
