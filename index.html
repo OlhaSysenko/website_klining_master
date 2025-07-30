@@ -38,91 +38,38 @@
     margin: 0 5px;
     text-decoration: underline;
   }
-
-  /* СТИЛІ ДЛЯ ЧАТУ */
   #chat-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #004d99;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 30px;
-    z-index: 9999;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    position: fixed; bottom: 20px; right: 20px; background: #004d99; width: 60px; height: 60px;
+    border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center;
+    color: white; font-size: 30px; z-index: 9999; box-shadow: 0 0 10px rgba(0,0,0,0.3);
   }
   #chat-window {
-    position: fixed;
-    bottom: 90px;
-    right: 20px;
-    width: 300px;
-    height: 400px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 9999;
+    position: fixed; bottom: 90px; right: 20px; width: 300px; height: 400px;
+    background: white; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    display: none; flex-direction: column; overflow: hidden; z-index: 9999;
   }
   #chat-header {
-    background:#004d99;
-    color:white;
-    padding:10px;
-    font-weight:bold;
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
+    background:#004d99; color:white; padding:10px; font-weight:bold;
+    display:flex; justify-content: space-between; align-items: center;
   }
   #chat-close {
-    background:none;
-    border:none;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
+    background:none; border:none; color:white; font-size:18px; cursor:pointer;
   }
   #chat-messages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    font-size: 14px;
+    flex: 1; padding: 10px; overflow-y: auto; font-size: 14px;
   }
   #chat-form {
-    display: flex;
-    border-top: 1px solid #ddd;
+    display: flex; border-top: 1px solid #ddd;
   }
   #chat-input {
-    flex: 1;
-    border: none;
-    padding: 10px;
-    font-size: 14px;
+    flex: 1; border: none; padding: 10px; font-size: 14px;
   }
   #chat-form button {
-    background: #004d99;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
+    background: #004d99; color: white; border: none; padding: 10px 15px; cursor: pointer;
   }
-  #chat-form button:hover {
-    background: #003366;
-  }
-  .chat-message-user {
-    text-align: right;
-    margin-bottom: 8px;
-    color: #004d99;
-  }
-  .chat-message-operator {
-    text-align: left;
-    margin-bottom: 8px;
-    color: #0073e6;
-  }
+  #chat-form button:hover { background: #003366; }
+  .chat-message-user { text-align: right; margin-bottom: 8px; color: #004d99; }
+  .chat-message-operator { text-align: left; margin-bottom: 8px; color: #0073e6; }
 </style>
 </head>
 <body>
@@ -136,7 +83,6 @@
       <a href="https://wa.me/380662770894" target="_blank" title="WhatsApp">
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="28" height="28" />
       </a>
-      
       <span class="phone-number">+380662770894</span>
       <div class="lang-switch">
         <a href="#" onclick="setLanguage('uk'); return false;">UKR</a> |
@@ -145,7 +91,6 @@
       </div>
     </div>
   </div>
-
   <div class="container header-title">
     <h1 data-i18n="header_title">SmartHands Diest</h1>
     <p data-i18n="header_slogan">Клінінг та майстер на годину у Дісті</p>
@@ -154,9 +99,7 @@
 
 <section class="about container">
   <h2 data-i18n="about_title">Про нас</h2>
-  <p data-i18n="about_text">
-    Ми — українська родина, яка після повномасштабного вторгнення рф переїхала до Бельгії. Ми прагнемо допомагати людям, пропонуючи надійні та якісні послуги клінінгу та "майстра на годину".
-  </p>
+  <p data-i18n="about_text">Ми — українська родина, яка після повномасштабного вторгнення рф переїхала до Бельгії. Ми прагнемо допомагати людям, пропонуючи надійні та якісні послуги клінінгу та "майстра на годину".</p>
   <img src="static/images/cleaning.jpg" alt="Наша команда" style="display: block; margin: 15px auto 0; width: 100%; border-radius: 8px;">
 </section>
 
@@ -208,22 +151,6 @@
     <p data-i18n="footer_text">📞 +32 456 78 90 12 | &copy; 2025 SmartHands Diest. Усі права захищені.</p>
   </div>
 </footer>
-
-<!-- Онлайн-чат -->
-<div id="chat-button" title="Онлайн чат">💬</div>
-<div id="chat-window" role="dialog" aria-modal="true" aria-labelledby="chat-header">
-  <div id="chat-header">
-    Онлайн чат
-    <button id="chat-close" aria-label="Закрити чат">×</button>
-  </div>
-  <div id="chat-messages">
-    <div><em>Оператор зараз офлайн</em></div>
-  </div>
-  <form id="chat-form">
-    <input type="text" id="chat-input" placeholder="Напишіть повідомлення..." autocomplete="off" />
-    <button type="submit">▶</button>
-  </form>
-</div>
 
 <script>
 const translations = {
@@ -315,40 +242,24 @@ const translations = {
 
 function setLanguage(lang) {
   if (!translations[lang]) return;
-
-  // Зміна тайтла сторінки
   document.title = translations[lang].title;
-
-  // Тексти у елементах з data-i18n
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (translations[lang][key]) {
-      el.textContent = translations[lang][key];
-    }
+    if (translations[lang][key]) el.textContent = translations[lang][key];
   });
-
-  // Placeholder для input, textarea, select з data-i18n-placeholder
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
-    if (translations[lang][key]) {
-      el.placeholder = translations[lang][key];
-    }
+    if (translations[lang][key]) el.placeholder = translations[lang][key];
   });
-
-  // Текст для option у select з data-i18n-option
   document.querySelectorAll('option[data-i18n-option]').forEach(el => {
     const key = el.getAttribute('data-i18n-option');
-    if (translations[lang][key]) {
-      el.textContent = translations[lang][key];
-    }
+    if (translations[lang][key]) el.textContent = translations[lang][key];
   });
 }
 
-// Встановити мову за замовчуванням при завантаженні
 document.addEventListener('DOMContentLoaded', () => {
   setLanguage('uk');
 
-  // Онлайн-чат логіка
   const chatButton = document.getElementById('chat-button');
   const chatWindow = document.getElementById('chat-window');
   const chatClose = document.getElementById('chat-close');
@@ -360,27 +271,20 @@ document.addEventListener('DOMContentLoaded', () => {
     chatWindow.style.display = 'flex';
     chatButton.style.display = 'none';
   };
-
   chatClose.onclick = () => {
     chatWindow.style.display = 'none';
     chatButton.style.display = 'flex';
   };
-
   chatForm.onsubmit = e => {
     e.preventDefault();
     const message = chatInput.value.trim();
     if (message === '') return;
-
-    // Додаємо повідомлення користувача
     const userMsg = document.createElement('div');
     userMsg.classList.add('chat-message-user');
     userMsg.textContent = `Ви: ${message}`;
     chatMessages.appendChild(userMsg);
-
     chatInput.value = '';
     chatMessages.scrollTop = chatMessages.scrollHeight;
-
-    // Відповідь оператора (через секунду)
     setTimeout(() => {
       const operatorMsg = document.createElement('div');
       operatorMsg.classList.add('chat-message-operator');
@@ -390,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   };
 
-  // --- Tawk.to script ---
   var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
   (function(){
     var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
@@ -403,20 +306,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!--Start of Tawk.to Script-->
+<!-- Tawk.to Script -->
 <script type="text/javascript">
   var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
   (function(){
-  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dap8rc';
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0);
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dap8rc';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
   })();
-  </script>
-  <!--End of Tawk.to Script-->
-
+</script>
 
 </body>
 </html>
