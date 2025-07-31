@@ -29,7 +29,7 @@
     /* Заголовки верхнього і нижнього колонтитула */
     header, footer {
       background: #004d99; /* Темно-синій фон */
-      color: #0a931a; /* Контрастний зелений текст (можливо для стилістики) */
+      color: #0a931a; /* Контрастний зелений текст */
       padding: 20px 0; /* Вертикальні відступи */
       text-align: center; /* Центрування тексту */
     }
@@ -267,8 +267,8 @@
 
 <!-- Нижній колонтитул -->
 <footer>
-  <div class="container" style="text-align:center; padding:20px 0; background:#004d99; color:#fff; margin-top: 40px;">
-    <p data-i18n="footer_text">📞 +32 456 78 90 12 | &copy; 2025 SmartHands Diest. Усі права захищені.</p>
+  <div class="container" style="text-align:center; padding:20px 0; background:#004d99; color:#0a931a; margin-top: 40px;">
+    <p data-i18n="footer_text">📞 +32 456 78 90 12 | © 2025 SmartHands Diest. Усі права захищені.</p>
   </div>
 </footer>
 
@@ -304,10 +304,60 @@
       footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. Усі права захищені."
     },
     en: {
-      // Англійські переклади для мультимовності (аналогічно українському)
+      title: "SmartHands Diest",
+      header_title: "SmartHands Diest",
+      header_slogan: "Cleaning and handyman services in Diest",
+      about_title: "About Us",
+      about_text: "We are a Ukrainian family who moved to Belgium after the full-scale invasion by Russia. We strive to help people by providing reliable and quality cleaning and handyman services.",
+      services_title: "Our Services",
+      service_cleaning_title: "🧹 Cleaning",
+      service_cleaning_text: "Professional cleaning of apartments, houses, offices. Fast, quality, reliable.",
+      service_handyman_title: "🔧 Handyman",
+      service_handyman_text: "Minor repairs, furniture assembly, appliance installation. Your problems are our business!",
+      service_list_1: "🧹 Cleaning apartments, houses, offices",
+      service_list_2: "🔧 Furniture assembly, plumbing and electrical repairs",
+      service_list_3: "🪟 Window washing, deep cleaning",
+      cta_title: "Got a problem but no time to solve it?",
+      cta_text: "The handyman is already on the way!",
+      cta_button: "Order a service",
+      form_title: "Leave a request",
+      form_name_placeholder: "Your name",
+      form_phone_placeholder: "Phone",
+      form_service_placeholder: "Select a service",
+      service_cleaning_title_option: "Cleaning",
+      service_handyman_title_option: "Handyman",
+      form_message_placeholder: "Message",
+      form_submit: "Send",
+      form_success: "Request sent!",
+      footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. All rights reserved."
     },
     nl: {
-      // Нідерландські переклади для мультимовності (аналогічно українському)
+      title: "SmartHands Diest",
+      header_title: "SmartHands Diest",
+      header_slogan: "Schoonmaak- en klusdiensten in Diest",
+      about_title: "Over ons",
+      about_text: "Wij zijn een Oekraïens gezin dat na de grootschalige invasie door Rusland naar België is verhuisd. We streven ernaar mensen te helpen door betrouwbare en kwalitatieve schoonmaak- en klusdiensten aan te bieden.",
+      services_title: "Onze diensten",
+      service_cleaning_title: "🧹 Schoonmaak",
+      service_cleaning_text: "Professionele schoonmaak van appartementen, huizen, kantoren. Snel, kwalitatief, betrouwbaar.",
+      service_handyman_title: "🔧 Klusjesman",
+      service_handyman_text: "Kleine reparaties, meubelmontage, apparaatinstallatie. Uw problemen zijn onze zaak!",
+      service_list_1: "🧹 Schoonmaken van appartementen, huizen, kantoren",
+      service_list_2: "🔧 Meubelmontage, loodgieter- en elektricienreparaties",
+      service_list_3: "🪟 Ramen wassen, grondige schoonmaak",
+      cta_title: "Probleem maar geen tijd om het op te lossen?",
+      cta_text: "De klusjesman is al onderweg!",
+      cta_button: "Bestel een dienst",
+      form_title: "Laat een aanvraag achter",
+      form_name_placeholder: "Uw naam",
+      form_phone_placeholder: "Telefoon",
+      form_service_placeholder: "Selecteer een dienst",
+      service_cleaning_title_option: "Schoonmaak",
+      service_handyman_title_option: "Klusjesman",
+      form_message_placeholder: "Bericht",
+      form_submit: "Verzenden",
+      form_success: "Aanvraag verzonden!",
+      footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. Alle rechten voorbehouden."
     }
   };
 
@@ -343,37 +393,17 @@
         el.textContent = translations[lang][key];
       }
     });
+
+    // Зберігаємо вибір мови
+    localStorage.setItem('siteLang', lang);
   }
 
   // Встановлюємо мову сайту при завантаженні сторінки
-  let currentLang = localStorage.getItem('siteLang') || 'uk'; // За замовчуванням українська
-  setLanguage(currentLang);
-
-  // Функція збереження вибору мови у localStorage та оновлення текстів
-  window.setLanguage = function(lang) {
-    localStorage.setItem('siteLang', lang);
-    setLanguage(lang);
-  };
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('siteLang') || 'uk';
+    setLanguage(savedLang);
+  });
 </script>
-
-<!-- Чат-сервіс Tawk.to: асинхронне завантаження скрипта -->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-  var s1=document.createElement("script"), s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dap8rc'; // Джерело скрипта чату
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0); // Вставляємо скрипт у DOM
-})();
-</script>
-
-<footer>
-  <div class="container" style="text-align:center; padding:20px 0; background:#004d99; color:#fff; margin-top: 40px;">
-    <p>📞 +32 456 78 90 12 | &copy; 2025 SmartHands Diest. Усі права захищені.</p>
-  </div>
-</footer>
 
 <!-- Tawk.to чат — мова англійська завжди -->
 <script type="text/javascript">
