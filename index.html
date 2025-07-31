@@ -304,91 +304,142 @@
       footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. Усі права захищені."
     },
     en: {
-      // Англійські переклади для мультимовності (аналогічно українському)
+      title: "SmartHands Diest",
+      header_title: "SmartHands Diest",
+      header_slogan: "Cleaning and handyman services in Diest",
+      about_title: "About Us",
+      about_text: "We are a Ukrainian family who moved to Belgium after the full-scale invasion by Russia. We strive to help people by offering reliable and quality cleaning and handyman services.",
+      services_title: "Our Services",
+      service_cleaning_title: "🧹 Cleaning",
+      service_cleaning_text: "Professional cleaning of apartments, houses, offices. Fast, high-quality, reliable.",
+      service_handyman_title: "🔧 Handyman",
+      service_handyman_text: "Small repairs, furniture assembly, appliance installation. Your problems are our business!",
+      service_list_1: "🧹 Cleaning apartments, houses, offices",
+      service_list_2: "🔧 Furniture assembly, plumbing and electrical repairs",
+      service_list_3: "🪟 Window washing, general cleaning",
+      cta_title: "Got a problem but no time to fix it?",
+      cta_text: "Handyman is already rushing to you!",
+      cta_button: "Order a service",
+      form_title: "Leave a request",
+      form_name_placeholder: "Your name",
+      form_phone_placeholder: "Phone",
+      form_service_placeholder: "Select a service",
+      service_cleaning_title_option: "Cleaning",
+      service_handyman_title_option: "Handyman",
+      form_message_placeholder: "Message",
+      form_submit: "Send",
+      form_success: "Request sent!",
+      footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. All rights reserved."
     },
     nl: {
-      // Нідерландські переклади для мультимовності (аналогічно українському)
-    }
+  title: "SmartHands Diest",
+  header_title: "SmartHands Diest",
+  header_slogan: "Schoonmaak- en klusdiensten in Diest",
+  about_title: "Over ons",
+  about_text: "Wij zijn een Oekraïens gezin dat naar België is verhuisd na de grootschalige invasie door Rusland. We streven ernaar mensen te helpen door betrouwbare en kwalitatieve schoonmaak- en klusdiensten aan te bieden.",
+  services_title: "Onze diensten",
+  service_cleaning_title: "🧹 Schoonmaak",
+  service_cleaning_text: "Professionele schoonmaak van appartementen, huizen en kantoren. Snel, kwalitatief en betrouwbaar.",
+  service_handyman_title: "🔧 Klusjesman",
+  service_handyman_text: "Kleine reparaties, meubelmontage, installatie van apparaten. Uw problemen zijn onze zorg!",
+  service_list_1: "🧹 Schoonmaak van appartementen, huizen en kantoren",
+  service_list_2: "🔧 Meubelmontage, loodgieters- en elektrische reparaties",
+  service_list_3: "🪟 Ramen wassen, grote schoonmaak",
+  cta_title: "Probleem maar geen tijd om het op te lossen?",
+  cta_text: "De klusjesman is al onderweg!",
+  cta_button: "Bestel een dienst",
+  form_title: "Laat een aanvraag achter",
+  form_name_placeholder: "Uw naam",
+  form_phone_placeholder: "Telefoon",
+  form_service_placeholder: "Selecteer een dienst",
+  service_cleaning_title_option: "Schoonmaak",
+  service_handyman_title_option: "Klusjesman",
+  form_message_placeholder: "Bericht",
+  form_submit: "Verzenden",
+  form_success: "Aanvraag verzonden!",
+  footer_text: "📞 +32 456 78 90 12 | © 2025 SmartHands Diest. Alle rechten voorbehouden."
+}
   };
 
-  // Функція для переключення мови на сайті
+  // Встановлюємо мову (за замовчуванням - українська)
+  let currentLang = 'uk';
+
+  // Функція для зміни мови на сторінці
   function setLanguage(lang) {
-    if (!translations[lang]) return; // Якщо такої мови немає — не робимо змін
+    currentLang = lang;
 
-    document.documentElement.lang = lang; // Встановлюємо атрибут lang у <html>
-
-    // Оновлюємо заголовок сторінки
+    // Змінюємо текст заголовку сторінки
     document.title = translations[lang].title;
 
-    // Знаходимо всі елементи з атрибутом data-i18n і змінюємо текст
+    // Змінюємо всі елементи з атрибутом data-i18n
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      if (translations[lang][key]) {
-        el.textContent = translations[lang][key];
-      }
+      if (translations[lang][key]) el.textContent = translations[lang][key];
     });
 
-    // Оновлюємо плейсхолдери у input, textarea
+    // Змінюємо всі плейсхолдери
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
       const key = el.getAttribute('data-i18n-placeholder');
-      if (translations[lang][key]) {
-        el.placeholder = translations[lang][key];
-      }
+      if (translations[lang][key]) el.placeholder = translations[lang][key];
     });
 
-    // Оновлюємо текст у option селектах
-    document.querySelectorAll('option[data-i18n-option]').forEach(el => {
+    // Змінюємо всі опції select із data-i18n-option
+    document.querySelectorAll('[data-i18n-option]').forEach(el => {
       const key = el.getAttribute('data-i18n-option');
-      if (translations[lang][key]) {
-        el.textContent = translations[lang][key];
-      }
+      if (translations[lang][key]) el.textContent = translations[lang][key];
     });
   }
 
-  // Встановлюємо мову сайту при завантаженні сторінки
-  let currentLang = localStorage.getItem('siteLang') || 'uk'; // За замовчуванням українська
-  setLanguage(currentLang);
+  // Виклик ініціалізації мови при завантаженні сторінки
+  window.addEventListener('DOMContentLoaded', () => {
+    setLanguage(currentLang);
+  });
 
-  // Функція збереження вибору мови у localStorage та оновлення текстів
-  window.setLanguage = function(lang) {
-    localStorage.setItem('siteLang', lang);
-    setLanguage(lang);
+  // Обробка відправки форми (поки просто виводить дані в консоль і показує повідомлення)
+  document.getElementById('tgForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Тут можна додати код відправки даних на сервер або в Телеграм
+
+    // Для прикладу, просто виводимо дані
+    const formData = new FormData(this);
+    console.log('Отримані дані форми:');
+    for (const [key, value] of formData.entries()) {
+      console.log(key + ': ' + value);
+    }
+
+    // Показуємо повідомлення про успішну відправку
+    const successMessage = document.getElementById('success');
+    successMessage.style.display = 'block';
+
+    // Очищаємо форму
+    this.reset();
+
+    // Приховуємо повідомлення через 5 секунд
+    setTimeout(() => {
+      successMessage.style.display = 'none';
+    }, 5000);
+  });
+</script>
+
+<!-- Підключення чат-сервісу Tawk.to -->
+<script type="text/javascript">
+  var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+
+  Tawk_API.onLoad = function() {
+    Tawk_API.showWidget();
+    Tawk_API.hideWidget = function() {};
   };
-</script>
 
-<!-- Чат-сервіс Tawk.to: асинхронне завантаження скрипта -->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-  var s1=document.createElement("script"), s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dap8rc'; // Джерело скрипта чату
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0); // Вставляємо скрипт у DOM
-})();
-</script>
-
-<footer>
-  <div class="container" style="text-align:center; padding:20px 0; background:#004d99; color:#fff; margin-top: 40px;">
-    <p>📞 +32 456 78 90 12 | &copy; 2025 SmartHands Diest. Усі права захищені.</p>
-  </div>
-</footer>
-
-<!-- Tawk.to чат — мова англійська завжди -->
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
   (function(){
-  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dblqco';
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0);
+    var s1=document.createElement("script"), s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dblqco';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
   })();
-  </script>
-  <!--End of Tawk.to Script-->
+</script>
 
 </body>
 </html>
