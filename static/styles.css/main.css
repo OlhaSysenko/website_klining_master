@@ -250,3 +250,95 @@ button:hover {
   width: 100%;
   border-radius: 8px;
 }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  background-color: #004a99;
+  color: white;
+}
+
+.contact-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact-left img {
+  transition: transform 0.3s ease;
+}
+
+.contact-left img:hover {
+  transform: scale(1.2);
+}
+
+.phone-number {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.fixed-header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #004a99;
+  color: white;
+}
+
+/* Ліва частина з іконками */
+.top-left {
+  display: flex;
+  align-items: center;
+}
+
+.top-left a {
+  margin-right: 10px;
+}
+
+.top-left img {
+  vertical-align: middle;
+}
+
+/* Номер телефону */
+.phone-number {
+  font-weight: bold;
+}
+
+/* Перемикач мов — справа */
+.top-right a {
+  color: white;
+  text-decoration: none;
+  margin: 0 6px;
+}
+
+.top-right a:hover {
+  text-decoration: underline;
+}
+
+/* Заголовок */
+.header-title {
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.header-title h1 {
+  font-size: 28px;
+  margin-bottom: 5px;
+  color: #004a99;
+}
+
+.header-title p {
+  font-size: 16px;
+  color: #333;
+}
