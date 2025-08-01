@@ -147,7 +147,7 @@
       border-radius: 8px;
       max-width: 400px;
       margin: 20px auto;
-      display: none;
+      display: none; /* зразу приховано */
     }
     #loginError {
       color: red;
@@ -156,7 +156,7 @@
     }
     #logoutBtn {
       margin: 20px auto;
-      display: block;
+      display: none; /* зразу приховано */
       max-width: 120px;
       background: #d9534f;
       border: none;
@@ -239,7 +239,7 @@
   <p id="loginError"></p>
 </section>
 
-<button id="logoutBtn" style="display:none;">Вийти</button>
+<button id="logoutBtn">Вийти</button>
 
 <section class="form-section container" id="form" style="display:none;">
   <h2 data-i18n="form_title">Залишити заявку</h2>
@@ -385,14 +385,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Конфіг Firebase (встав свій)
 const firebaseConfig = {
-  apiKey: "ТУТ_ТВОЇ_ДАНІ",
-  authDomain: "ТУТ_ТВОЇ_ДАНІ.firebaseapp.com",
-  projectId: "ТУТ_ТВОЇ_ДАНІ",
-  storageBucket: "ТУТ_ТВОЇ_ДАНІ.appspot.com",
-  messagingSenderId: "ТУТ_ТВОЇ_ДАНІ",
-  appId: "ТУТ_ТВОЇ_ДАНІ"
+  apiKey: "AIzaSyAH166FhToXuevxASpLj8YGtDW-BkK8eUA",
+  authDomain: "website-klining-master.firebaseapp.com",
+  projectId: "website-klining-master",
+  storageBucket: "website-klining-master.firebasestorage.app",
+  messagingSenderId: "647291379610",
+  appId: "1:647291379610:web:97349e40a763f4fa0fa423",
+  measurementId: "G-Y2H97XR3TZ"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -407,16 +407,19 @@ const logoutBtn = document.getElementById("logoutBtn");
 const formSection = document.getElementById("form");
 const contactForm = document.getElementById("contactForm");
 const successMsg = document.getElementById("success");
+const togglePasswordCheckbox = document.getElementById("togglePassword");
+const loginPasswordInput = document.getElementById("loginPassword");
 
 // Сховати форму заявки поки не залогінені
 formSection.style.display = "none";
 logoutBtn.style.display = "none";
+loginSection.style.display = "block"; // показати форму логіну за замовчуванням
 
 // Обробка логіну
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value;
+  const password = loginPasswordInput.value;
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
@@ -432,6 +435,7 @@ onAuthStateChanged(auth, (user) => {
     loginSection.style.display = "none";
     formSection.style.display = "block";
     logoutBtn.style.display = "block";
+    successMsg.style.display = "none";
     console.log("Користувач увійшов:", user.email);
   } else {
     loginSection.style.display = "block";
@@ -480,6 +484,15 @@ contactForm.addEventListener("submit", async (e) => {
   } catch (error) {
     alert("Помилка при відправці заявки. Спробуйте ще раз.");
     console.error(error);
+  }
+});
+
+// Показати/сховати пароль у формі логіну
+togglePasswordCheckbox.addEventListener("change", () => {
+  if (togglePasswordCheckbox.checked) {
+    loginPasswordInput.type = "text";
+  } else {
+    loginPasswordInput.type = "password";
   }
 });
 </script>
