@@ -23,7 +23,6 @@
     }
 
     header, footer {
-      /* header styles оновлені нижче */
       color: #0a931a;
       padding: 20px 0;
       text-align: center;
@@ -139,7 +138,6 @@
       text-decoration: underline;
     }
 
-    /* Зображення в секції Про нас */
     .about img {
       display: block;
       margin: 15px auto 0;
@@ -312,39 +310,23 @@
 </section>
 
 <section class="form-section container" id="form">
-  <h2 data-i18n="form_title">Залишити заявку або увійти/зареєструватись</h2>
-  
-  <form id="authRequestForm">
-    <input type="email" id="authEmail" placeholder="Email" required data-i18n-placeholder="form_email_placeholder" />
-    
-    <div style="display:flex; gap:10px;">
-      <input type="password" id="authPassword" placeholder="Пароль (для реєстрації або входу)" minlength="6" />
-      <label style="align-self:center;">
-        <input type="checkbox" id="toggleAuthPassword" /> Показати пароль
-      </label>
-    </div>
+  <h2 data-i18n="form_title">Залишити заявку</h2>
 
-    <select id="authAction" required>
-      <option value="" disabled selected>Оберіть дію</option>
-      <option value="login">Увійти</option>
-      <option value="register">Зареєструватись</option>
-      <option value="guest">Подати заявку без авторизації</option>
-    </select>
-
-    <input type="text" id="authName" placeholder="Ваше ім’я" required data-i18n-placeholder="form_name_placeholder" />
-    <input type="tel" id="authPhone" placeholder="Телефон" required data-i18n-placeholder="form_phone_placeholder" />
-    <select id="authService" required>
-      <option value="" data-i18n-option="form_service_placeholder">Оберіть послугу</option>
+  <form id="requestForm">
+    <input type="email" id="email" placeholder="Email" required data-i18n-placeholder="form_email_placeholder" />
+    <input type="text" id="name" placeholder="Ваше ім’я" required data-i18n-placeholder="form_name_placeholder" />
+    <input type="tel" id="phone" placeholder="Телефон" required data-i18n-placeholder="form_phone_placeholder" />
+    <select id="service" required>
+      <option value="" disabled selected data-i18n-option="form_service_placeholder">Оберіть послугу</option>
       <option value="Клінінг" data-i18n-option="service_cleaning_title_option">Клінінг</option>
       <option value="Майстер на годину" data-i18n-option="service_handyman_title_option">Майстер на годину</option>
     </select>
-    <textarea id="authMessage" placeholder="Повідомлення" rows="4" data-i18n-placeholder="form_message_placeholder"></textarea>
+    <textarea id="message" placeholder="Повідомлення" rows="4" data-i18n-placeholder="form_message_placeholder"></textarea>
     <button type="submit" data-i18n="form_submit">Надіслати</button>
   </form>
 
-  <button id="logoutBtn" style="display:none;">Вийти</button>
   <p id="success" data-i18n="form_success">Заявку надіслано!</p>
-  <p id="authError" style="color:red; text-align:center;"></p>
+  <p id="error" style="color:red; text-align:center;"></p>
 </section>
 
 <footer>
@@ -353,7 +335,6 @@
   </div>
 </footer>
 
-<!-- Переклади -->
 <script>
   const translations = {
     uk: {
@@ -445,15 +426,11 @@
     }
   };
 
-  // Функція оновлення текстів сторінки під вибрану мову
   function setLanguage(lang) {
     if (!translations[lang]) return;
     document.documentElement.lang = lang;
-
-    // Оновити title
     document.title = translations[lang].title || document.title;
 
-    // Оновити всі елементи з data-i18n
     document.querySelectorAll("[data-i18n]").forEach(el => {
       const key = el.getAttribute("data-i18n");
       if (translations[lang][key]) {
@@ -461,7 +438,6 @@
       }
     });
 
-    // Оновити плейсхолдери
     document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
       const key = el.getAttribute("data-i18n-placeholder");
       if (translations[lang][key]) {
@@ -469,121 +445,79 @@
       }
     });
 
-    // Оновити option у select (які мають data-i18n-option)
-    document.querySelectorAll("option[data-i18n-option]").forEach(opt => {
-      const key = opt.getAttribute("data-i18n-option");
+    document.querySelectorAll("[data-i18n-option]").forEach(el => {
+      const key = el.getAttribute("data-i18n-option");
       if (translations[lang][key]) {
-        opt.textContent = translations[lang][key];
+        el.textContent = translations[lang][key];
       }
     });
   }
 
-  // При завантаженні ставимо мову за замовчуванням - українську
-  document.addEventListener("DOMContentLoaded", () => {
-    setLanguage("uk");
-  });
+  setLanguage('uk'); // За замовчуванням українська
+
+  // Firestore SDK setup (потрібно підставити ваші параметри)
+  // <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  // <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </script>
 
-<!-- Скріпт показу/приховування пароля -->
-<script>
-  document.getElementById('toggleAuthPassword').addEventListener('change', function() {
-    const passInput = document.getElementById('authPassword');
-    passInput.type = this.checked ? 'text' : 'password';
-  });
-</script>
-
-<!-- Firebase налаштування -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
 <script>
-  // TODO: заміни на свої параметри Firebase
+  // Ваші Firebase config
   const firebaseConfig = {
-    apiKey: "ТУТ_ТВОЙ_API_KEY",
-    authDomain: "ТВОЙ_ДОМЕН.firebaseapp.com",
-    projectId: "ТВОЙ_PROJECT_ID",
-    storageBucket: "ТВОЙ_BUCKET.appspot.com",
-    messagingSenderId: "ID_ОТПРАВИТЕЛЯ",
-    appId: "ID_ПРИЛОЖЕНИЯ"
-  };
+  apiKey: "AIzaSyAH166FhToXuevxASpLj8YGtDW-BkK8eUA",
+  authDomain: "website-klining-master.firebaseapp.com",
+  projectId: "website-klining-master",
+  storageBucket: "website-klining-master.firebasestorage.app",
+  messagingSenderId: "647291379610",
+  appId: "1:647291379610:web:97349e40a763f4fa0fa423",
+  measurementId: "G-Y2H97XR3TZ"
+};
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  const form = document.getElementById("authRequestForm");
-  const successMsg = document.getElementById("success");
-  const errorMsg = document.getElementById("authError");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const form = document.getElementById('requestForm');
+  const successMsg = document.getElementById('success');
+  const errorMsg = document.getElementById('error');
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    errorMsg.textContent = "";
-    successMsg.style.display = "none";
+    errorMsg.textContent = '';
+    successMsg.style.display = 'none';
 
-    const email = document.getElementById("authEmail").value.trim();
-    const password = document.getElementById("authPassword").value;
-    const action = document.getElementById("authAction").value;
-    const name = document.getElementById("authName").value.trim();
-    const phone = document.getElementById("authPhone").value.trim();
-    const service = document.getElementById("authService").value;
-    const message = document.getElementById("authMessage").value.trim();
-
-    if (!email || !name || !phone || !service) {
-      errorMsg.textContent = "Будь ласка, заповніть усі обов’язкові поля";
-      return;
-    }
+    const data = {
+      email: form.email.value.trim(),
+      name: form.name.value.trim(),
+      phone: form.phone.value.trim(),
+      service: form.service.value,
+      message: form.message.value.trim(),
+      timestamp: new Date()
+    };
 
     try {
-      if (action === "register") {
-        // Реєстрація користувача Firebase Authentication
-        // Якщо потрібен — додам окремо пізніше
-        errorMsg.textContent = "Реєстрація поки не реалізована";
-        return;
-      } else if (action === "login") {
-        // Логін користувача Firebase Authentication
-        errorMsg.textContent = "Логін поки не реалізований";
-        return;
-      }
-
-      // Зберігаємо заявку у Firestore
-      await db.collection("requests").add({
-        email,
-        name,
-        phone,
-        service,
-        message,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      successMsg.style.display = "block";
+      await db.collection('requests').add(data);
+      successMsg.style.display = 'block';
       form.reset();
-      logoutBtn.style.display = "none";
     } catch (error) {
-      errorMsg.textContent = "Помилка при надсиланні заявки: " + error.message;
+      errorMsg.textContent = 'Помилка при відправці. Спробуйте пізніше.';
+      console.error(error);
     }
   });
-
-  logoutBtn.addEventListener("click", () => {
-    // TODO: вийти з Firebase auth, якщо потрібен
-    logoutBtn.style.display = "none";
-    successMsg.style.display = "none";
-    errorMsg.textContent = "";
-    form.reset();
-  });
 </script>
 
-<!-- Чат Tawk.to — виправлений блок -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var s1 = document.createElement("script");
-    s1.src = 'https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dblqco';
-    s1.async = true;
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin', '*');
-    document.body.appendChild(s1);
-  });
-</script>
+  <!-- Tawk.to script, вставити перед закриваючим тегом </body> -->
+<script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dblqco';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
   
-  </body>
-  </html>
-  
+</body>
+</html>
