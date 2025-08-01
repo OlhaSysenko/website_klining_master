@@ -492,8 +492,8 @@
       phone: form.phone.value.trim(),
       service: form.service.value,
       message: form.message.value.trim(),
-      timestamp: new Date()
-    };
+      firebase.firestore.FieldValue.serverTimestamp()
+   };
 
     try {
       await db.collection('requests').add(data);
@@ -518,11 +518,6 @@
     s0.parentNode.insertBefore(s1,s0);
   })();
   </script>
-  
-  <!-- Firebase App (Core SDK) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<!-- Firestore -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 </body>
 </html>
