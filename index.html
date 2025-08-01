@@ -627,6 +627,20 @@
     document.getElementById('success').style.display = 'block';
     this.reset();
   });
+
+  const chatButton = document.getElementById('chat-button');
+const chatWindow = document.getElementById('chat-window');
+const chatClose = document.getElementById('chat-close');
+
+chatButton.addEventListener('click', () => {
+  chatWindow.classList.toggle('active');
+});
+
+chatClose.addEventListener('click', () => {
+  chatWindow.classList.remove('active');
+});
+
+
 </script>
 
     <!-- Tawk.to Live Chat script -->
