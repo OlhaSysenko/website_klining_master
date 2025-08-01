@@ -140,6 +140,32 @@
       font-weight: bold;
       margin-left: 10px;
     }
+    /* Додатково для форми логіну */
+    #login {
+      background: #e0f0ff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 20px auto;
+      display: none;
+    }
+    #loginError {
+      color: red;
+      text-align: center;
+      margin-top: 5px;
+    }
+    #logoutBtn {
+      margin: 20px auto;
+      display: block;
+      max-width: 120px;
+      background: #d9534f;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -201,7 +227,21 @@
   <a href="#form" class="btn" data-i18n="cta_button">Замовити послугу</a>
 </section>
 
-<section class="form-section container" id="form">
+<!-- Форма логіну -->
+<section id="login" class="container">
+  <h2>Увійдіть, щоб залишити заявку</h2>
+  <form id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required />
+    <input type="password" id="loginPassword" placeholder="Пароль" required />
+    <label><input type="checkbox" id="togglePassword" /> Показати пароль</label>
+    <button type="submit">Увійти</button>
+  </form>
+  <p id="loginError"></p>
+</section>
+
+<button id="logoutBtn" style="display:none;">Вийти</button>
+
+<section class="form-section container" id="form" style="display:none;">
   <h2 data-i18n="form_title">Залишити заявку</h2>
   <form id="contactForm">
     <input type="text" id="name" placeholder="Ваше ім’я" required data-i18n-placeholder="form_name_placeholder" />
@@ -341,57 +381,107 @@
 
 <!-- Firebase SDK  -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAH166FhToXuevxASpLj8YGtDW-BkK8eUA",
-    authDomain: "website-klining-master.firebaseapp.com",
-    projectId: "website-klining-master",
-    storageBucket: "website-klining-master.firebasestorage.app",
-    messagingSenderId: "647291379610",
-    appId: "1:647291379610:web:97349e40a763f4fa0fa423",
-    measurementId: "G-Y2H97XR3TZ"
-  };
+// Конфіг Firebase (встав свій)
+const firebaseConfig = {
+  apiKey: "ТУТ_ТВОЇ_ДАНІ",
+  authDomain: "ТУТ_ТВОЇ_ДАНІ.firebaseapp.com",
+  projectId: "ТУТ_ТВОЇ_ДАНІ",
+  storageBucket: "ТУТ_ТВОЇ_ДАНІ.appspot.com",
+  messagingSenderId: "ТУТ_ТВОЇ_ДАНІ",
+  appId: "ТУТ_ТВОЇ_ДАНІ"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-  // Обробка форми
-  document.getElementById("contactForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+// Елементи
+const loginSection = document.getElementById("login");
+const loginForm = document.getElementById("loginForm");
+const loginError = document.getElementById("loginError");
+const logoutBtn = document.getElementById("logoutBtn");
+const formSection = document.getElementById("form");
+const contactForm = document.getElementById("contactForm");
+const successMsg = document.getElementById("success");
 
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const service = document.getElementById("service").value;
-    const message = document.getElementById("message").value.trim();
+// Сховати форму заявки поки не залогінені
+formSection.style.display = "none";
+logoutBtn.style.display = "none";
 
-    if (!name || !phone || !service) {
-      alert("Будь ласка, заповніть всі обов’язкові поля!");
-      return;
-    }
+// Обробка логіну
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
 
-    try {
-      await addDoc(collection(db, "requests"), {
-        name,
-        phone,
-        service,
-        message,
-        createdAt: serverTimestamp()
-      });
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    loginError.textContent = "";
+  } catch (error) {
+    loginError.textContent = "Помилка входу: " + error.message;
+  }
+});
 
-      document.getElementById("contactForm").reset();
-      const successMessage = document.getElementById("success");
-      successMessage.style.display = "block";
+// Відстеження зміни стану автентифікації
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loginSection.style.display = "none";
+    formSection.style.display = "block";
+    logoutBtn.style.display = "block";
+    console.log("Користувач увійшов:", user.email);
+  } else {
+    loginSection.style.display = "block";
+    formSection.style.display = "none";
+    logoutBtn.style.display = "none";
+    successMsg.style.display = "none";
+  }
+});
 
-      setTimeout(() => {
-        successMessage.style.display = "none";
-      }, 5000);
-    } catch (error) {
-      alert("Помилка при відправці заявки. Спробуйте ще раз.");
-      console.error("Firestore error:", error);
-    }
-  });
+// Вихід
+logoutBtn.addEventListener("click", () => {
+  signOut(auth);
+});
+
+// Відправка заявки в Firestore
+contactForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Будь ласка, увійдіть, щоб надіслати заявку.");
+    return;
+  }
+
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const service = document.getElementById("service").value;
+  const message = document.getElementById("message").value.trim();
+
+  if (!name || !phone || !service) {
+    alert("Будь ласка, заповніть усі обов’язкові поля.");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "requests"), {
+      name,
+      phone,
+      service,
+      message,
+      userEmail: user.email,
+      createdAt: serverTimestamp()
+    });
+
+    successMsg.style.display = "block";
+    contactForm.reset();
+  } catch (error) {
+    alert("Помилка при відправці заявки. Спробуйте ще раз.");
+    console.error(error);
+  }
+});
 </script>
 
 </body>

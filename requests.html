@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartHands Diest — Заявки (адмін)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+      max-width: 900px;
+      margin: auto;
+    }
+    h1 {
+      color: #004d99;
+      text-align: center;
+    }
+    form {
+      max-width: 300px;
+      margin: 30px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    input[type="email"], input[type="password"] {
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #004d99;
+      color: white;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #003366;
+    }
+    #logoutBtn {
+      margin: 20px auto;
+      display: block;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #004d99;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f0f4ff;
+    }
+    #errorMsg {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>SmartHands Diest — Адмінка заявок</h1>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Пароль" required />
+    <button type="submit">Увійти</button>
+  </form>
+
+  <button id="logoutBtn" style="display:none;">Вийти</button>
+
+  <div id="errorMsg"></div>
+
+  <table id="requestsTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Ім'я</th>
+        <th>Телефон</th>
+        <th>Послуга</th>
+        <th>Повідомлення</th>
+        <th>Дата заявки</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAH166FhToXuevxASpLj8YGtDW-BkK8eUA",
+      authDomain: "website-klining-master.firebaseapp.com",
+      projectId: "website-klining-master",
+      storageBucket: "website-klining-master.firebasestorage.app",
+      messagingSenderId: "647291379610",
+      appId: "1:647291379610:web:97349e40a763f4fa0fa423",
+      measurementId: "G-Y2H97XR3TZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const loginForm = document.getElementById("loginForm");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const errorMsg = document.getElementById("errorMsg");
+    const requestsTable = document.getElementById("requestsTable");
+    const tbody = requestsTable.querySelector("tbody");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = "";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        errorMsg.textContent = "Невірний логін або пароль";
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth);
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Користувач увійшов
+        loginForm.style.display = "none";
+        logoutBtn.style.display = "block";
+        requestsTable.style.display = "table";
+        await loadRequests();
+      } else {
+        // Користувач вийшов або неавторизований
+        loginForm.style.display = "flex";
+        logoutBtn.style.display = "none";
+        requestsTable.style.display = "none";
+        tbody.innerHTML = "";
+      }
+    });
+
+    async function loadRequests() {
+      tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Завантаження...</td></tr>";
+
+      try {
+        const q = query(collection(db, "requests"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Заявок поки немає.</td></tr>";
+          return;
+        }
+
+        tbody.innerHTML = "";
+
+        querySnapshot.forEach(doc => {
+          const data = doc.data();
+          const date = data.createdAt ? data.createdAt.toDate().toLocaleString() : "—";
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${escapeHTML(data.name)}</td>
+            <td>${escapeHTML(data.phone)}</td>
+            <td>${escapeHTML(data.service)}</td>
+            <td>${escapeHTML(data.message || "")}</td>
+            <td>${date}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        tbody.innerHTML = "<tr><td colspan='5' style='color:red; text-align:center;'>Помилка завантаження заявок.</td></tr>";
+        console.error("Error loading requests:", error);
+      }
+    }
+
+    function escapeHTML(text) {
+      return text.replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[m]);
+    }
+  </script>
+
+</body>
+</html>
