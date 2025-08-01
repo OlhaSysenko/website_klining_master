@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
@@ -137,118 +137,6 @@
       cursor: pointer;
       margin: 0 5px;
       text-decoration: underline;
-    }
-
-    /* Чат */
-    #chat-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #004d99;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 30px;
-      z-index: 9999;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      transition: opacity 0.3s ease;
-    }
-
-    #chat-button.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #chat-window {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      width: 300px;
-      height: 400px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 9999;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    #chat-window.active {
-      display: flex;
-      opacity: 1;
-      visibility: visible;
-    }
-
-    #chat-header {
-      background: #004d99;
-      color: white;
-      padding: 10px;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    #chat-close {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    #chat-messages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      font-size: 14px;
-    }
-
-    #chat-form {
-      display: flex;
-      border-top: 1px solid #ddd;
-    }
-
-    #chat-input {
-      flex: 1;
-      border: none;
-      padding: 10px;
-      font-size: 14px;
-      font-family: inherit;
-    }
-
-    #chat-form button {
-      background: #004d99;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    #chat-form button:hover {
-      background: #003366;
-    }
-
-    .chat-message-user {
-      text-align: right;
-      margin-bottom: 8px;
-      color: #004d99;
-    }
-
-    .chat-message-operator {
-      text-align: left;
-      margin-bottom: 8px;
-      color: #0073e6;
     }
 
     /* Зображення в секції Про нас */
@@ -465,20 +353,6 @@
   </div>
 </footer>
 
-<!-- Чат-сервіс -->
-<div id="chat-button" title="Чат з оператором">💬</div>
-<div id="chat-window">
-  <div id="chat-header">
-    Чат
-    <button id="chat-close">&times;</button>
-  </div>
-  <div id="chat-messages"></div>
-  <form id="chat-form">
-    <input type="text" id="chat-input" placeholder="Введіть повідомлення..." autocomplete="off" />
-    <button type="submit">Відправити</button>
-  </form>
-</div>
-
 <!-- Переклади -->
 <script>
   const translations = {
@@ -556,14 +430,14 @@
       service_list_3: "🪟 Ramen wassen, grondige schoonmaak",
       cta_title: "Probleem, maar geen tijd om het op te lossen?",
       cta_text: "De klusjesman is al onderweg!",
-      cta_button: "Bestel dienst",
+      cta_button: "Bestel service",
       form_title: "Laat een aanvraag achter",
       form_name_placeholder: "Uw naam",
       form_phone_placeholder: "Telefoon",
       form_service_placeholder: "Selecteer een dienst",
       service_cleaning_title_option: "Schoonmaak",
       service_handyman_title_option: "Klusjesman",
-      form_email_placeholder: "Email",
+      form_email_placeholder: "E-mail",
       form_message_placeholder: "Bericht",
       form_submit: "Verzenden",
       form_success: "Aanvraag verzonden!",
@@ -571,90 +445,145 @@
     }
   };
 
-  // Функція встановлення мови
+  // Функція оновлення текстів сторінки під вибрану мову
   function setLanguage(lang) {
     if (!translations[lang]) return;
-
     document.documentElement.lang = lang;
 
-    // Переклад елементів з data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
+    // Оновити title
+    document.title = translations[lang].title || document.title;
+
+    // Оновити всі елементи з data-i18n
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
       if (translations[lang][key]) {
         el.textContent = translations[lang][key];
       }
     });
 
-    // Переклад плейсхолдерів
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.getAttribute('data-i18n-placeholder');
+    // Оновити плейсхолдери
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+      const key = el.getAttribute("data-i18n-placeholder");
       if (translations[lang][key]) {
         el.placeholder = translations[lang][key];
       }
     });
 
-    // Переклад опцій селектів
-    document.querySelectorAll('option[data-i18n-option]').forEach(el => {
-      const key = el.getAttribute('data-i18n-option');
+    // Оновити option у select (які мають data-i18n-option)
+    document.querySelectorAll("option[data-i18n-option]").forEach(opt => {
+      const key = opt.getAttribute("data-i18n-option");
       if (translations[lang][key]) {
-        el.textContent = translations[lang][key];
+        opt.textContent = translations[lang][key];
       }
     });
-
-    // Оновити title сторінки
-    if (translations[lang].title) {
-      document.title = translations[lang].title;
-    }
   }
 
-  // Встановити початкову мову — з html lang або uk
-  setLanguage(document.documentElement.lang || 'uk');
+  // При завантаженні ставимо мову за замовчуванням - українську
+  document.addEventListener("DOMContentLoaded", () => {
+    setLanguage("uk");
+  });
 </script>
+
+<!-- Скріпт показу/приховування пароля -->
+<script>
+  document.getElementById('toggleAuthPassword').addEventListener('change', function() {
+    const passInput = document.getElementById('authPassword');
+    passInput.type = this.checked ? 'text' : 'password';
+  });
+</script>
+
+<!-- Firebase налаштування -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script>
-  // Показати/сховати пароль
-  document.getElementById('toggleAuthPassword').addEventListener('change', function() {
-    const pwd = document.getElementById('authPassword');
-    pwd.type = this.checked ? 'text' : 'password';
-  });
+  // TODO: заміни на свої параметри Firebase
+  const firebaseConfig = {
+    apiKey: "ТУТ_ТВОЙ_API_KEY",
+    authDomain: "ТВОЙ_ДОМЕН.firebaseapp.com",
+    projectId: "ТВОЙ_PROJECT_ID",
+    storageBucket: "ТВОЙ_BUCKET.appspot.com",
+    messagingSenderId: "ID_ОТПРАВИТЕЛЯ",
+    appId: "ID_ПРИЛОЖЕНИЯ"
+  };
 
-  // Проста імітація надсилання форми (заміни на реальний код Firebase)
-  document.getElementById('authRequestForm').addEventListener('submit', function(e) {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const form = document.getElementById("authRequestForm");
+  const successMsg = document.getElementById("success");
+  const errorMsg = document.getElementById("authError");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    errorMsg.textContent = "";
+    successMsg.style.display = "none";
 
-    // Тут можна додати валідацію та відправку на сервер/Firebase
+    const email = document.getElementById("authEmail").value.trim();
+    const password = document.getElementById("authPassword").value;
+    const action = document.getElementById("authAction").value;
+    const name = document.getElementById("authName").value.trim();
+    const phone = document.getElementById("authPhone").value.trim();
+    const service = document.getElementById("authService").value;
+    const message = document.getElementById("authMessage").value.trim();
 
-    document.getElementById('success').style.display = 'block';
-    this.reset();
+    if (!email || !name || !phone || !service) {
+      errorMsg.textContent = "Будь ласка, заповніть усі обов’язкові поля";
+      return;
+    }
+
+    try {
+      if (action === "register") {
+        // Реєстрація користувача Firebase Authentication
+        // Якщо потрібен — додам окремо пізніше
+        errorMsg.textContent = "Реєстрація поки не реалізована";
+        return;
+      } else if (action === "login") {
+        // Логін користувача Firebase Authentication
+        errorMsg.textContent = "Логін поки не реалізований";
+        return;
+      }
+
+      // Зберігаємо заявку у Firestore
+      await db.collection("requests").add({
+        email,
+        name,
+        phone,
+        service,
+        message,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      successMsg.style.display = "block";
+      form.reset();
+      logoutBtn.style.display = "none";
+    } catch (error) {
+      errorMsg.textContent = "Помилка при надсиланні заявки: " + error.message;
+    }
   });
 
-  const chatButton = document.getElementById('chat-button');
-const chatWindow = document.getElementById('chat-window');
-const chatClose = document.getElementById('chat-close');
-
-chatButton.addEventListener('click', () => {
-  chatWindow.classList.toggle('active');
-});
-
-chatClose.addEventListener('click', () => {
-  chatWindow.classList.remove('active');
-});
-
-
+  logoutBtn.addEventListener("click", () => {
+    // TODO: вийти з Firebase auth, якщо потрібен
+    logoutBtn.style.display = "none";
+    successMsg.style.display = "none";
+    errorMsg.textContent = "";
+    form.reset();
+  });
 </script>
 
-    <!-- Tawk.to Live Chat script -->
-    <script type="text/javascript">
-      var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-      (function(){
-        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-        s1.async=true;
-        s1.src='https://embed.tawk.to/6889e68f7058a0192737d0eb/default';
-        s1.charset='UTF-8';
-        s1.setAttribute('crossorigin','*');
-        s0.parentNode.insertBefore(s1,s0);
-      })();
-    </script>
-
-</body>
-</html>
+<!-- Чат Tawk.to — виправлений блок -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var s1 = document.createElement("script");
+    s1.src = 'https://embed.tawk.to/6889e68f7058a0192737d0eb/1j1dblqco';
+    s1.async = true;
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    document.body.appendChild(s1);
+  });
+</script>
+  
+  </body>
+  </html>
+  
