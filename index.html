@@ -476,34 +476,37 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+  firebase.firestore.setLogLevel('debug'); // Якщо викликає помилку, приберіть цей рядок
+
 
   const form = document.getElementById('requestForm');
   const successMsg = document.getElementById('success');
   const errorMsg = document.getElementById('error');
 
   form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errorMsg.textContent = '';
-    successMsg.style.display = 'none';
+  e.preventDefault();
+  errorMsg.textContent = '';
+  successMsg.style.display = 'none';
 
-    const data = {
-      email: form.email.value.trim(),
-      name: form.name.value.trim(),
-      phone: form.phone.value.trim(),
-      service: form.service.value,
-      message: form.message.value.trim(),
-      firebase.firestore.FieldValue.serverTimestamp()
-   };
+  const data = {
+    email: form.email.value.trim(),
+    name: form.name.value.trim(),
+    phone: form.phone.value.trim(),
+    service: form.service.value,
+    message: form.message.value.trim(),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
 
-    try {
-      await db.collection('requests').add(data);
-      successMsg.style.display = 'block';
-      form.reset();
-    } catch (error) {
-      errorMsg.textContent = 'Помилка при відправці. Спробуйте пізніше.';
-      console.error(error);
-    }
-  });
+  try {
+    await db.collection('requests').add(data);
+    successMsg.style.display = 'block';
+    form.reset();
+  } catch (error) {
+    errorMsg.textContent = 'Помилка при відправці. Спробуйте пізніше.';
+    console.error(error);
+  }
+});
+
 </script>
 
   <!-- Tawk.to script, вставити перед закриваючим тегом </body> -->
