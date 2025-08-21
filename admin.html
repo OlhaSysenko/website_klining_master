@@ -21,8 +21,8 @@ th { background:#004d99; color:white; position:sticky; top:0; }
 .status-done { background:#d6f5d6; }
 button { padding:5px 10px; background:#004d99; color:white; border:none; border-radius:5px; cursor:pointer; margin:2px; }
 button:hover { background:#003366; }
-.dashboard { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
-.card { flex:1 1 150px; background:#0073e6; color:white; padding:15px; border-radius:8px; text-align:center; cursor:pointer; }
+.dashboard-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px; justify-content:center; }
+.card { flex:1 1 150px; background:#0073e6; color:white; padding:15px; border-radius:8px; text-align:center; cursor:pointer; min-width:120px; max-width:200px; }
 .card h3 { margin:5px 0; }
 .card span { font-size:24px; font-weight:bold; }
 #authForm { max-width:400px; margin:50px auto; background:#fff; padding:30px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
@@ -53,8 +53,8 @@ input.filter { width:90%; padding:3px; margin:2px; }
     <button id="logoutBtn">Вийти</button>
     <h1>Адмін панель SmartHands Diest</h1>
 
-    <div class="dashboard" id="dashboard">
-      <!-- Клікабельні блоки статистики -->
+    <div id="dashboard">
+      <!-- Тут будуть два центровані ряди карток -->
     </div>
 
     <button id="exportBtn">Експорт в Excel</button>
@@ -109,11 +109,9 @@ const logoutBtn = document.getElementById('logoutBtn');
 const dashboard = document.getElementById('dashboard');
 
 let isLogin = true;
-let currentFilter = {};
 let unsubscribe = null;
 let currentUser = null;
 
-// переклад статусів
 const statusMap = {
   new: "Нові",
   in_progress: "В роботі",
@@ -134,7 +132,6 @@ authForm.addEventListener('submit', async (e)=>{
   const email = document.getElementById('adminEmail').value;
   const password = document.getElementById('adminPassword').value;
   errorMsg.textContent = '';
-
   try {
     let userCredential;
     if(isLogin){
@@ -202,7 +199,6 @@ function loadRequestsRealtime(){
       tableBody.appendChild(tr);
     });
 
-    // кнопки дій
     tableBody.querySelectorAll('.acceptBtn').forEach(btn=>{
       btn.onclick = ()=> db.collection('requests').doc(btn.dataset.id).update({status:'in_progress'});
     });
@@ -230,6 +226,9 @@ function loadRequestsRealtime(){
 
 function renderDashboard(requests){
   dashboard.innerHTML = '';
+
+  const statusCards = [];
+  const serviceCards = [];
   const total = requests.length;
   const byStatus = {};
   const byService = {};
@@ -239,23 +238,39 @@ function renderDashboard(requests){
     byService[r.service] = (byService[r.service]||0)+1;
   });
 
-  const cardsData = [
-  {label:'Усі заявки', value:total, filter:{}},
-  ...Object.keys(byStatus).map(s=>({label:`${statusMap[s] || s}`, value:byStatus[s], filter:{status:s}})),
-  ...Object.keys(byService).map(s=>({label:`${s}`, value:byService[s], filter:{service:s}}))
-];
+  statusCards.push({label:'Усі заявки', value:total, filter:{}});
+  ['new','in_progress','done','closed'].forEach(s=>{
+    if(byStatus[s]) statusCards.push({label:statusMap[s], value:byStatus[s], filter:{status:s}});
+  });
 
-  cardsData.forEach(c=>{
+  Object.keys(byService).forEach(s=>{
+    serviceCards.push({label:s, value:byService[s], filter:{service:s}});
+  });
+
+  const statusRow = document.createElement('div');
+  statusRow.className='dashboard-row';
+  statusCards.forEach(c=>{
     const card = document.createElement('div');
     card.className='card';
     card.innerHTML = `<h3>${c.label}</h3><span>${c.value}</span>`;
     card.onclick = ()=> applyDashboardFilter(c.filter);
-    dashboard.appendChild(card);
+    statusRow.appendChild(card);
   });
+  dashboard.appendChild(statusRow);
+
+  const serviceRow = document.createElement('div');
+  serviceRow.className='dashboard-row';
+  serviceCards.forEach(c=>{
+    const card = document.createElement('div');
+    card.className='card';
+    card.innerHTML = `<h3>${c.label}</h3><span>${c.value}</span>`;
+    card.onclick = ()=> applyDashboardFilter(c.filter);
+    serviceRow.appendChild(card);
+  });
+  dashboard.appendChild(serviceRow);
 }
 
 function applyDashboardFilter(filter){
-  currentFilter = filter;
   document.querySelectorAll('#requestsTable tbody tr').forEach(tr=>{
     let show = true;
     if(filter.status && tr.cells[6].textContent !== (statusMap[filter.status] || filter.status)) show=false;
