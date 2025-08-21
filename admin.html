@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Panel - SmartHands Diest</title>
+
+<!-- SheetJS -->
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; }
+.container { max-width: 1200px; margin:auto; padding:20px; }
+h1,h2 { text-align:center; color:#004a99; }
+table { width:100%; border-collapse: collapse; margin-top:20px; }
+th,td { border:1px solid #ccc; padding:10px; text-align:left; }
+th { background:#004d99; color:white; position:sticky; top:0; }
+.status-new { background:#fff8dc; }        
+.status-in_progress { background:#d0e7ff; } 
+.status-closed { background:#e0e0e0; }
+.status-done { background:#d6f5d6; }
+button { padding:5px 10px; background:#004d99; color:white; border:none; border-radius:5px; cursor:pointer; margin:2px; }
+button:hover { background:#003366; }
+.dashboard { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+.card { flex:1 1 150px; background:#0073e6; color:white; padding:15px; border-radius:8px; text-align:center; cursor:pointer; }
+.card h3 { margin:5px 0; }
+.card span { font-size:24px; font-weight:bold; }
+#authForm { max-width:400px; margin:50px auto; background:#fff; padding:30px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+#authForm input { width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:5px; }
+#authForm button { width:100%; }
+#logoutBtn { float:right; margin-top:10px; }
+#errorMsg { color:red; text-align:center; }
+#toggleAuth { text-align:center; margin-top:10px; cursor:pointer; color:#0073e6; text-decoration:underline; }
+input.filter { width:90%; padding:3px; margin:2px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div id="authSection">
+    <h2 id="authTitle">Авторизація адміністратора</h2>
+    <form id="authForm">
+      <input type="email" id="adminEmail" placeholder="Email" required>
+      <input type="password" id="adminPassword" placeholder="Пароль" required>
+      <button type="submit" id="authSubmit">Увійти</button>
+    </form>
+    <p id="errorMsg"></p>
+    <p id="toggleAuth">Ще не зареєстровані? Створити акаунт</p>
+  </div>
+
+  <div id="adminSection" style="display:none;">
+    <button id="logoutBtn">Вийти</button>
+    <h1>Адмін панель SmartHands Diest</h1>
+
+    <div class="dashboard" id="dashboard">
+      <!-- Клікабельні блоки статистики -->
+    </div>
+
+    <button id="exportBtn">Експорт в Excel</button>
+
+    <table id="requestsTable">
+      <thead>
+        <tr>
+          <th>Email<br><input class="filter" data-column="0" placeholder="Фільтр"></th>
+          <th>Ім'я<br><input class="filter" data-column="1" placeholder="Фільтр"></th>
+          <th>Телефон<br><input class="filter" data-column="2" placeholder="Фільтр"></th>
+          <th>Послуга<br><input class="filter" data-column="3" placeholder="Фільтр"></th>
+          <th>Повідомлення<br><input class="filter" data-column="4" placeholder="Фільтр"></th>
+          <th>Дата створення<br><input class="filter" data-column="5" placeholder="Фільтр"></th>
+          <th>Статус<br><input class="filter" data-column="6" placeholder="Фільтр"></th>
+          <th>Коментар</th>
+          <th>Дії</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAH166FhToXuevxASpLj8YGtDW-BkK8eUA",
+  authDomain: "website-klining-master.firebaseapp.com",
+  projectId: "website-klining-master",
+  storageBucket: "website-klining-master.firebasestorage.app",
+  messagingSenderId: "647291379610",
+  appId: "1:647291379610:web:97349e40a763f4fa423",
+  measurementId: "G-Y2H97XR3TZ"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const authForm = document.getElementById('authForm');
+const authSection = document.getElementById('authSection');
+const adminSection = document.getElementById('adminSection');
+const authTitle = document.getElementById('authTitle');
+const authSubmit = document.getElementById('authSubmit');
+const toggleAuth = document.getElementById('toggleAuth');
+const errorMsg = document.getElementById('errorMsg');
+const logoutBtn = document.getElementById('logoutBtn');
+const dashboard = document.getElementById('dashboard');
+
+let isLogin = true;
+let currentFilter = {};
+let unsubscribe = null;
+let currentUser = null;
+
+// переклад статусів
+const statusMap = {
+  new: "Нові",
+  in_progress: "В роботі",
+  closed: "Закриті",
+  done: "Виконані"
+};
+
+toggleAuth.addEventListener('click', ()=>{
+  isLogin = !isLogin;
+  authTitle.textContent = isLogin ? "Авторизація адміністратора" : "Реєстрація адміністратора";
+  authSubmit.textContent = isLogin ? "Увійти" : "Створити акаунт";
+  toggleAuth.textContent = isLogin ? "Ще не зареєстровані? Створити акаунт" : "Вже зареєстровані? Увійти";
+  errorMsg.textContent = '';
+});
+
+authForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const email = document.getElementById('adminEmail').value;
+  const password = document.getElementById('adminPassword').value;
+  errorMsg.textContent = '';
+
+  try {
+    let userCredential;
+    if(isLogin){
+      userCredential = await auth.signInWithEmailAndPassword(email,password);
+    } else {
+      userCredential = await auth.createUserWithEmailAndPassword(email,password);
+    }
+    currentUser = userCredential.user;
+    showAdmin();
+  } catch(error){
+    errorMsg.textContent = isLogin ? 'Помилка авторизації. Перевірте Email та пароль.' : 'Помилка реєстрації: ' + error.message;
+    console.error(error);
+  }
+});
+
+logoutBtn.addEventListener('click', ()=>{
+  if(unsubscribe) unsubscribe();
+  auth.signOut().then(()=>{
+    adminSection.style.display = 'none';
+    authSection.style.display = 'block';
+    authForm.reset();
+    isLogin = true;
+    authTitle.textContent = "Авторизація адміністратора";
+    authSubmit.textContent = "Увійти";
+    toggleAuth.textContent = "Ще не зареєстровані? Створити акаунт";
+    errorMsg.textContent = '';
+  });
+});
+
+function showAdmin(){
+  authSection.style.display = 'none';
+  adminSection.style.display = 'block';
+  loadRequestsRealtime();
+}
+
+function loadRequestsRealtime(){
+  const tableBody = document.querySelector('#requestsTable tbody');
+  unsubscribe = db.collection('requests').orderBy('createdAt','desc').onSnapshot(snapshot=>{
+    tableBody.innerHTML = '';
+    const requests = [];
+    snapshot.forEach(doc=>{
+      const data = doc.data();
+      data.id = doc.id;
+      if(!data.status) data.status='new';
+      requests.push(data);
+
+      const date = data.createdAt ? data.createdAt.toDate().toLocaleString() : '–';
+      const tr = document.createElement('tr');
+      tr.className = `status-${data.status}`;
+      tr.innerHTML = `
+        <td>${data.email||''}</td>
+        <td>${data.name||''}</td>
+        <td>${data.phone||''}</td>
+        <td>${data.service||''}</td>
+        <td>${data.message||''}</td>
+        <td>${date}</td>
+        <td>${statusMap[data.status] || data.status}</td>
+        <td>${data.adminComment||''}</td>
+        <td>
+          <button class="acceptBtn" data-id="${data.id}">В роботу</button>
+          <button class="closeBtn" data-id="${data.id}">Закрити</button>
+          <button class="doneBtn" data-id="${data.id}">Виконано</button>
+          <button class="commentBtn" data-id="${data.id}">Коментар</button>
+        </td>`;
+      tableBody.appendChild(tr);
+    });
+
+    // кнопки дій
+    tableBody.querySelectorAll('.acceptBtn').forEach(btn=>{
+      btn.onclick = ()=> db.collection('requests').doc(btn.dataset.id).update({status:'in_progress'});
+    });
+    tableBody.querySelectorAll('.closeBtn').forEach(btn=>{
+      btn.onclick = ()=> db.collection('requests').doc(btn.dataset.id).update({status:'closed'});
+    });
+    tableBody.querySelectorAll('.doneBtn').forEach(btn=>{
+      btn.onclick = ()=> db.collection('requests').doc(btn.dataset.id).update({status:'done'});
+    });
+    tableBody.querySelectorAll('.commentBtn').forEach(btn=>{
+      btn.onclick = ()=>{
+        const comment = prompt("Введіть коментар:");
+        if(comment!==null){
+          db.collection('requests').doc(btn.dataset.id).update({adminComment:comment});
+        }
+      }
+    });
+
+    renderDashboard(requests);
+    initFilters();
+  }, error=>{
+    console.error("Помилка при завантаженні заявок:", error);
+  });
+}
+
+function renderDashboard(requests){
+  dashboard.innerHTML = '';
+  const total = requests.length;
+  const byStatus = {};
+  const byService = {};
+
+  requests.forEach(r=>{
+    byStatus[r.status] = (byStatus[r.status]||0)+1;
+    byService[r.service] = (byService[r.service]||0)+1;
+  });
+
+  const cardsData = [
+  {label:'Усі заявки', value:total, filter:{}},
+  ...Object.keys(byStatus).map(s=>({label:`${statusMap[s] || s}`, value:byStatus[s], filter:{status:s}})),
+  ...Object.keys(byService).map(s=>({label:`${s}`, value:byService[s], filter:{service:s}}))
+];
+
+  cardsData.forEach(c=>{
+    const card = document.createElement('div');
+    card.className='card';
+    card.innerHTML = `<h3>${c.label}</h3><span>${c.value}</span>`;
+    card.onclick = ()=> applyDashboardFilter(c.filter);
+    dashboard.appendChild(card);
+  });
+}
+
+function applyDashboardFilter(filter){
+  currentFilter = filter;
+  document.querySelectorAll('#requestsTable tbody tr').forEach(tr=>{
+    let show = true;
+    if(filter.status && tr.cells[6].textContent !== (statusMap[filter.status] || filter.status)) show=false;
+    if(filter.service && tr.cells[3].textContent !== filter.service) show=false;
+    tr.style.display = show ? '' : 'none';
+  });
+}
+
+function initFilters(){
+  document.querySelectorAll('input.filter').forEach(input=>{
+    input.oninput = ()=>{
+      const col = parseInt(input.dataset.column);
+      const filter = input.value.toLowerCase();
+      document.querySelectorAll('#requestsTable tbody tr').forEach(tr=>{
+        const td = tr.cells[col];
+        tr.style.display = td.textContent.toLowerCase().includes(filter) ? '' : 'none';
+      });
+    }
+  });
+}
+
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const table = document.getElementById('requestsTable');
+  const wb = XLSX.utils.table_to_book(table, {sheet:"Заявки"});
+  XLSX.writeFile(wb, "requests.xlsx");
+});
+</script>
+</body>
+</html>
